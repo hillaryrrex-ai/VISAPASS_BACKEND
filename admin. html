@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VisaPass Admin</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root{
+    --bg-deep:#000000;
+    --bg-card:rgba(10,10,10,0.85);
+    --bg-card-solid:#0a0a0a;
+    --border-soft: rgba(255,255,255,0.06);
+    --border-hover: rgba(0,255,136,0.15);
+    --green:#00ff88;
+    --green-dark:#00cc6a;
+    --green-glow:rgba(0,255,136,0.08);
+    --text:#ffffff;
+    --text-dim:rgba(255,255,255,0.6);
+    --text-faint:rgba(255,255,255,0.3);
+    --radius-lg:20px;
+    --radius-md:14px;
+    --radius-sm:10px;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:radial-gradient(circle at 50% 0%, #0a0a0a 0%, #000000 100%);
+    color:var(--text);
+    min-height:100vh;
+    position:relative;
+  }
+
+  body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    background:radial-gradient(circle at 20% 50%, rgba(0,255,136,0.04) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(0,255,136,0.03) 0%, transparent 50%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  ::-webkit-scrollbar{width:6px;height:6px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--green);border-radius:8px;}
+
+  .app{display:flex;min-height:100vh;position:relative;z-index:1;}
+
+  .sidebar{
+    width:260px;
+    flex-shrink:0;
+    background:rgba(5,5,5,0.95);
+    border-right:1px solid var(--border-soft);
+    backdrop-filter:blur(20px);
+    display:flex;
+    flex-direction:column;
+    padding:24px 16px;
+    position:fixed;
+    top:0;left:0;bottom:0;
+    z-index:100;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:8px 12px 28px 12px;
+    border-bottom:1px solid var(--border-soft);
+    margin-bottom:20px;
+  }
+  .brand-mark{
+    width:38px;height:38px;
+    border-radius:12px;
+    background:linear-gradient(135deg, var(--green), var(--green-dark));
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;
+    box-shadow:0 0 30px rgba(0,255,136,0.15);
+    position:relative;
+    flex-shrink:0;
+  }
+  .brand-text .name{font-size:16px;font-weight:700;letter-spacing:-0.5px;color:#fff;}
+  .brand-text .tag{font-size:10px;color:var(--green);letter-spacing:0.1em;text-transform:uppercase;font-weight:600;}
+
+  .nav{display:flex;flex-direction:column;gap:4px;flex:1;}
+  .nav-item{
+    display:flex;align-items:center;gap:12px;
+    padding:12px 14px;
+    border-radius:var(--radius-sm);
+    color:var(--text-dim);
+    background:transparent;
+    border:none;
+    font-size:13.5px;
+    font-weight:500;
+    cursor:pointer;
+    text-align:left;
+    width:100%;
+    transition:all .2s ease;
+    position:relative;
+  }
+  .nav-item i{width:18px;text-align:center;font-size:14px;}
+  .nav-item:hover{background:rgba(0,255,136,0.05);color:var(--text);}
+  .nav-item.active{
+    color:var(--green);
+    background:rgba(0,255,136,0.08);
+    box-shadow:inset 0 0 0 1px rgba(0,255,136,0.1);
+  }
+  .nav-item.active::before{
+    content:'';
+    position:absolute;left:-16px;top:6px;bottom:6px;width:3px;
+    background:linear-gradient(180deg,var(--green),var(--green-dark));
+    border-radius:0 4px 4px 0;
+  }
+
+  .sidebar-foot{border-top:1px solid var(--border-soft);padding-top:16px;margin-top:16px;}
+  .admin-chip{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 12px;
+    border-radius:var(--radius-sm);
+    background:rgba(255,255,255,0.03);
+    border:1px solid var(--border-soft);
+    margin-bottom:10px;
+  }
+  .admin-avatar{
+    width:32px;height:32px;border-radius:50%;
+    background:linear-gradient(135deg,var(--green),var(--green-dark));
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:700;color:#000;
+    flex-shrink:0;
+  }
+  .admin-chip .who{overflow:hidden;}
+  .admin-chip .who .role{font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;}
+  .admin-chip .who .email{font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;}
+
+  .logout-btn{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    width:100%;padding:10px;
+    border-radius:var(--radius-sm);
+    background:rgba(255,68,102,0.08);
+    border:1px solid rgba(255,68,102,0.15);
+    color:rgba(255,255,255,0.5);
+    font-size:13px;font-weight:500;
+    cursor:pointer;
+    transition:all .2s ease;
+  }
+  .logout-btn:hover{background:rgba(255,68,102,0.15);color:#fff;}
+
+  .main{margin-left:260px;flex:1;min-width:0;}
+
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 36px;
+    position:sticky;top:0;
+    background:rgba(0,0,0,0.7);
+    backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--border-soft);
+    z-index:50;
+  }
+  .topbar h1{font-size:20px;font-weight:700;letter-spacing:-0.5px;color:#fff;}
+  .topbar .sub{font-size:12px;color:var(--text-faint);margin-top:2px;}
+  .live-pill{
+    display:flex;align-items:center;gap:6px;
+    padding:6px 14px;
+    border-radius:20px;
+    background:rgba(0,255,136,0.08);
+    border:1px solid rgba(0,255,136,0.15);
+    font-size:11px;color:var(--green);font-weight:600;
+  }
+  .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);animation:pulse-dot 2s infinite;}
+  @keyframes pulse-dot{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
+  .content{padding:28px 36px 50px 36px;}
+
+  .stats-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+    margin-bottom:24px;
+  }
+  .stat-card{
+    background:var(--bg-card);
+    backdrop-filter:blur(14px);
+    border:1px solid var(--border-soft);
+    border-radius:var(--radius-lg);
+    padding:20px 24px;
+    position:relative;
+    overflow:hidden;
+    transition:all .3s ease;
+    opacity:0;
+    transform:translateY(10px);
+    animation:card-in .5s ease forwards;
+  }
+  .stat-card:hover{transform:translateY(-2px);border-color:var(--border-hover);box-shadow:0 8px 40px rgba(0,0,0,0.4);}
+  .stat-card::before{
+    content:'';
+    position:absolute;inset:0;
+    border-radius:var(--radius-lg);
+    padding:1px;
+    background:linear-gradient(135deg, rgba(0,255,136,0.1), transparent 60%);
+    -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor;
+    mask-composite:exclude;
+    pointer-events:none;
+  }
+  .stat-card .stat-icon{font-size:20px;margin-bottom:8px;color:var(--green);}
+  .stat-card .stat-number{font-size:28px;font-weight:800;letter-spacing:-0.5px;color:#fff;font-variant-numeric:tabular-nums;}
+  .stat-card .stat-label{font-size:13px;color:var(--text-dim);margin-top:4px;font-weight:400;}
+
+  .grid-2{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px;align-items:start;}
+
+  .panel{
+    background:var(--bg-card);
+    backdrop-filter:blur(14px);
+    border:1px solid var(--border-soft);
+    border-radius:var(--radius-lg);
+    padding:20px 24px;
+    opacity:0;
+    animation:card-in .5s ease .1s forwards;
+  }
+  .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .panel-head h3{font-size:14px;font-weight:600;color:#fff;display:flex;align-items:center;gap:8px;}
+  .panel-head h3 i{color:var(--green);font-size:13px;}
+  .panel-head .count-badge{
+    font-size:11px;color:var(--text-faint);
+    background:rgba(255,255,255,0.04);
+    padding:4px 12px;border-radius:20px;
+    border:1px solid var(--border-soft);
+  }
+
+  .table-wrap{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;}
+  thead th{
+    text-align:left;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--text-faint);
+    font-weight:600;
+    padding:0 10px 10px 10px;
+    border-bottom:1px solid var(--border-soft);
+  }
+  tbody td{
+    padding:12px 10px;
+    font-size:13px;
+    color:rgba(255,255,255,0.8);
+    border-bottom:1px solid rgba(255,255,255,0.03);
+  }
+  tbody tr:hover{background:rgba(255,255,255,0.02);}
+  tbody tr:last-child td{border-bottom:none;}
+
+  .cell-primary{font-weight:600;color:#fff;}
+  .badge{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:4px 12px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:600;
+    text-transform:capitalize;
+  }
+  .badge::before{content:'';width:5px;height:5px;border-radius:50%;}
+  .badge.pending{background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.2);}
+  .badge.pending::before{background:#fbbf24;}
+  .badge.success,.badge.paid,.badge.low{background:rgba(0,255,136,0.1);color:var(--green);border:1px solid rgba(0,255,136,0.15);}
+  .badge.success::before,.badge.paid::before,.badge.low::before{background:var(--green);}
+  .badge.failed,.badge.high{background:rgba(255,68,102,0.1);color:#ff4466;border:1px solid rgba(255,68,102,0.15);}
+  .badge.failed::before,.badge.high::before{background:#ff4466;}
+  .badge.medium{background:rgba(245,158,11,0.1);color:#fbbf24;border:1px solid rgba(245,158,11,0.15);}
+  .badge.medium::before{background:#fbbf24;}
+
+  .quick-item{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 4px;
+    border-bottom:1px solid var(--border-soft);
+  }
+  .quick-item:last-child{border-bottom:none;padding-bottom:2px;}
+  .quick-item .ql-label{font-size:13px;color:var(--text-dim);}
+  .quick-item .ql-value{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;color:#fff;}
+
+  .broadcast-input,.email-input{
+    background:rgba(255,255,255,0.04);
+    border:1px solid var(--border-soft);
+    border-radius:var(--radius-sm);
+    padding:12px 14px;
+    color:#fff;
+    font-size:13px;
+    outline:none;
+    font-family:inherit;
+    width:100%;
+    transition:border-color .2s ease;
+  }
+  .broadcast-input:focus,.email-input:focus{border-color:rgba(0,255,136,0.3);}
+  .broadcast-input::placeholder,.email-input::placeholder{color:var(--text-faint);}
+  .broadcast-btn{
+    background:linear-gradient(135deg, var(--green), var(--green-dark));
+    border:none;
+    border-radius:var(--radius-sm);
+    padding:12px;
+    color:#000;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+    transition:all .2s ease;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    width:100%;
+  }
+  .broadcast-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,255,136,0.2);}
+  .email-btn{
+    background:linear-gradient(135deg, var(--green), var(--green-dark));
+    border:none;
+    border-radius:var(--radius-sm);
+    padding:12px;
+    color:#000;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+    transition:all .2s ease;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    width:100%;
+  }
+  .email-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,255,136,0.2);}
+  .result-msg{text-align:center;font-size:12px;margin-top:6px;color:var(--text-faint);}
+
+  .panel.mt-4{margin-top:16px;}
+  .mt-20{margin-top:20px;}
+  .gap-14{display:grid;grid-template-columns:1fr;gap:14px;}
+
+  .loading-state{text-align:center;padding:50px 20px;color:var(--text-faint);}
+  .spinner{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,0.05);border-top-color:var(--green);animation:spin .7s linear infinite;margin:0 auto 14px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .empty-state{text-align:center;padding:40px 20px;color:var(--text-faint);font-size:13px;}
+  .error-state{text-align:center;padding:30px 20px;color:#ff4466;font-size:13px;}
+
+  @media (max-width:1100px){.stats-grid{grid-template-columns:repeat(2,1fr);}.grid-2{grid-template-columns:1fr;}}
+  @media (max-width:780px){.sidebar{width:70px;padding:16px 10px;}.brand-text,.nav-item span,.admin-chip .who,.logout-btn span{display:none;}.nav-item{justify-content:center;padding:12px;}.nav-item.active::before{left:-10px;}.main{margin-left:70px;}.content{padding:20px 16px 40px;}.topbar{padding:16px;}.stats-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="brand-text">
+        <div class="name">VisaPass</div>
+        <div class="tag">Admin Suite</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-item active" data-tab="dashboard" onclick="loadTab('dashboard', this)">
+        <i class="fa-solid fa-gauge-high"></i><span>Dashboard</span>
+      </button>
+      <button class="nav-item" data-tab="users" onclick="loadTab('users', this)">
+        <i class="fa-solid fa-users"></i><span>Users</span>
+      </button>
+      <button class="nav-item" data-tab="payments" onclick="loadTab('payments', this)">
+        <i class="fa-solid fa-wallet"></i><span>Payments</span>
+      </button>
+      <button class="nav-item" data-tab="documents" onclick="loadTab('documents', this)">
+        <i class="fa-solid fa-file-shield"></i><span>Document Checks</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="admin-chip">
+        <div class="admin-avatar" id="adminInitial">A</div>
+        <div class="who">
+          <div class="role">Administrator</div>
+          <div class="email" id="adminEmail">Loading...</div>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="logout()">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i><span>Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1 id="pageTitle">Dashboard Overview</h1>
+        <div class="sub" id="pageSub">Real-time snapshot of VisaPass activity</div>
+      </div>
+      <div class="live-pill"><span class="live-dot"></span> Live</div>
+    </div>
+
+    <div class="content" id="mainContent">
+      <div class="loading-state"><div class="spinner"></div>Loading dashboard…</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function getAdminToken(){ return localStorage.getItem('adminToken'); }
+function getAdminEmail(){ return localStorage.getItem('adminEmail'); }
+
+if(!getAdminToken() || !getAdminEmail()){
+  window.location.href = '/admin-login';
+}
+
+document.getElementById('adminEmail').textContent = getAdminEmail() || '';
+document.getElementById('adminInitial').textContent = (getAdminEmail() || 'A').charAt(0).toUpperCase();
+
+function logout(){
+  localStorage.removeItem('adminToken');
+  localStorage.removeItem('adminEmail');
+  window.location.href = '/admin-login';
+}
+
+async function apiCall(endpoint){
+  const response = await fetch(endpoint, {
+    headers: {
+      'x-admin-token': getAdminToken(),
+      'x-user-email': getAdminEmail()
+    }
+  });
+  return response.json();
+}
+
+function fmtMoney(n){
+  const v = Number(n) || 0;
+  return v.toLocaleString('en-US');
+}
+function fmtDate(d){
+  return d ? new Date(d).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : 'N/A';
+}
+function escapeHtml(str){
+  return String(str ?? '').replace(/[&<>"']/g, m => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
+}
+function badgeClass(status){
+  return String(status || 'pending').toLowerCase();
+}
+
+function animateNumber(el, target, opts = {}){
+  const prefix = opts.prefix || '';
+  const duration = 900;
+  const start = performance.now();
+  const from = 0;
+  function tick(now){
+    const p = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - p, 3);
+    const val = Math.round(from + (target - from) * eased);
+    el.textContent = prefix + fmtMoney(val);
+    if(p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+const PAGE_META = {
+  dashboard: ['Dashboard Overview', 'Real-time snapshot of VisaPass activity'],
+  users: ['Users', 'Everyone who has applied through VisaPass'],
+  payments: ['Payments', 'Revenue and transaction history via Paystack'],
+  documents: ['Document Checks', 'AI-reviewed documents and fraud risk']
+};
+
+let currentTab = 'dashboard';
+
+function loadTab(tab, btn){
+  currentTab = tab;
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  else document.querySelector(`.nav-item[data-tab="${tab}"]`)?.classList.add('active');
+
+  const [title, sub] = PAGE_META[tab] || ['', ''];
+  document.getElementById('pageTitle').textContent = title;
+  document.getElementById('pageSub').textContent = sub;
+
+  const content = document.getElementById('mainContent');
+  content.innerHTML = `<div class="loading-state"><div class="spinner"></div>Loading ${escapeHtml(title)}…</div>`;
+
+  if(tab === 'dashboard') renderDashboard(content);
+  else if(tab === 'users') renderUsers(content);
+  else if(tab === 'payments') renderPayments(content);
+  else if(tab === 'documents') renderDocumentChecks(content);
+}
+
+// DASHBOARD
+async function renderDashboard(content){
+  try{
+    const data = await apiCall('/api/admin/dashboard');
+    const stats = data.data.stats || {};
+    const recent = data.data.recentApplications || [];
+
+    content.innerHTML = `
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+          <div class="stat-number" id="num-users">0</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-file-lines"></i></div>
+          <div class="stat-number" id="num-apps">0</div>
+          <div class="stat-label">Total Applications</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-sack-dollar"></i></div>
+          <div class="stat-number" id="num-revenue">$0</div>
+          <div class="stat-label">Total Revenue</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <div class="stat-number" id="num-fake">0</div>
+          <div class="stat-label">Fake Documents Detected</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head">
+            <h3><i class="fa-solid fa-clock-rotate-left"></i> Recent Applications</h3>
+            <span class="count-badge">${recent.length} shown</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>User</th><th>Country</th><th>Status</th></tr></thead>
+              <tbody>
+                ${recent.length > 0 ? recent.map(app => `
+                  <tr>
+                    <td class="cell-primary">${escapeHtml(app.userId || app.user_email || 'N/A')}</td>
+                    <td>${escapeHtml(app.country || 'N/A')}</td>
+                    <td><span class="badge ${badgeClass(app.status)}">${escapeHtml(app.status || 'pending')}</span></td>
+                  </tr>
+                `).join('') : '<tr><td colspan="3"><div class="empty-state"><i class="fa-regular fa-folder-open"></i>No recent applications</div></td></tr>'}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h3><i class="fa-solid fa-bolt"></i> Quick Stats</h3></div>
+          <div class="quick-item">
+            <span class="ql-label">Today's Submissions</span>
+            <span class="ql-value">${fmtMoney(stats.todaySubmissions || 0)}</span>
+          </div>
+          <div class="quick-item">
+            <span class="ql-label">Pending Reviews</span>
+            <span class="ql-value">${fmtMoney(stats.pendingReviews || 0)}</span>
+          </div>
+          <div class="quick-item">
+            <span class="ql-label">Paid Payments</span>
+            <span class="ql-value">${fmtMoney(stats.paidPayments || 0)}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel mt-20">
+        <div class="panel-head">
+          <h3><i class="fa-solid fa-bullhorn"></i> Send Broadcast</h3>
+          <span class="count-badge">Custom Message</span>
+        </div>
+        <div class="gap-14">
+          <input type="text" id="broadcastTitle" class="broadcast-input" placeholder="Title: e.g. 🎉 New Feature Alert!">
+          <textarea id="broadcastBody" class="broadcast-input" rows="3" placeholder="Message: e.g. We've added 50 new countries to VisaPass!"></textarea>
+          <button class="broadcast-btn" onclick="sendBroadcast()">
+            <i class="fa-solid fa-paper-plane"></i> Send to All Users
+          </button>
+          <div id="broadcastResult" class="result-msg"></div>
+        </div>
+      </div>
+
+      <div class="panel mt-20">
+        <div class="panel-head">
+          <h3><i class="fa-solid fa-envelope"></i> Send Email</h3>
+          <span class="count-badge">Custom Email</span>
+        </div>
+        <div class="gap-14">
+          <input type="email" id="emailTo" class="email-input" placeholder="User Email: e.g. user@email.com">
+          <input type="text" id="emailSubject" class="email-input" placeholder="Subject: e.g. Your visa application update">
+          <textarea id="emailBody" class="email-input" rows="3" placeholder="Email body..."></textarea>
+          <button class="email-btn" onclick="sendEmail()">
+            <i class="fa-solid fa-envelope"></i> Send Email
+          </button>
+          <div id="emailResult" class="result-msg"></div>
+        </div>
+      </div>
+    `;
+
+    animateNumber(document.getElementById('num-users'), stats.totalUsers || 0);
+    animateNumber(document.getElementById('num-apps'), stats.totalApplications || 0);
+    animateNumber(document.getElementById('num-revenue'), stats.totalRevenue || 0, {prefix:'$'});
+    animateNumber(document.getElementById('num-fake'), stats.fakeDocuments || 0);
+
+  }catch(error){
+    content.innerHTML = '<div class="panel"><div class="error-state"><i class="fa-solid fa-circle-exclamation"></i><br>Failed to load dashboard: '+escapeHtml(error.message)+'</div></div>';
+  }
+}
+
+// BROADCAST
+async function sendBroadcast() {
+  const title = document.getElementById('broadcastTitle').value.trim();
+  const body = document.getElementById('broadcastBody').value.trim();
+  const result = document.getElementById('broadcastResult');
+  
+  if (!title || !body) {
+    result.style.color = '#ff4466';
+    result.textContent = '❌ Please enter both title and message.';
+    return;
+  }
+  
+  result.textContent = '⏳ Sending...';
+  result.style.color = '#fbbf24';
+  
+  try {
+    const response = await fetch('/api/admin/broadcast', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-token': getAdminToken(),
+        'x-user-email': getAdminEmail()
+      },
+      body: JSON.stringify({ title, body })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      result.style.color = '#00ff88';
+      result.textContent = '✅ '+ (data.data?.message || 'Broadcast sent successfully!');
+      document.getElementById('broadcastTitle').value = '';
+      document.getElementById('broadcastBody').value = '';
+    } else {
+      result.style.color = '#ff4466';
+      result.textContent = '❌ '+ (data.message || 'Failed to send');
+    }
+  } catch (error) {
+    result.style.color = '#ff4466';
+    result.textContent = '❌ Error: '+error.message;
+  }
+}
+
+// EMAIL
+async function sendEmail() {
+  const to = document.getElementById('emailTo').value.trim();
+  const subject = document.getElementById('emailSubject').value.trim();
+  const body = document.getElementById('emailBody').value.trim();
+  const result = document.getElementById('emailResult');
+  
+  if (!to || !subject || !body) {
+    result.style.color = '#ff4466';
+    result.textContent = '❌ Please fill all fields.';
+    return;
+  }
+  
+  result.textContent = '⏳ Sending...';
+  result.style.color = '#fbbf24';
+  
+  try {
+    const response = await fetch('/api/admin/send-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-token': getAdminToken(),
+        'x-user-email': getAdminEmail()
+      },
+      body: JSON.stringify({ to, subject, body })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      result.style.color = '#00ff88';
+      result.textContent = '✅ Email queued successfully!';
+      document.getElementById('emailTo').value = '';
+      document.getElementById('emailSubject').value = '';
+      document.getElementById('emailBody').value = '';
+    } else {
+      result.style.color = '#ff4466';
+      result.textContent = '❌ '+ (data.message || 'Failed to send');
+    }
+  } catch (error) {
+    result.style.color = '#ff4466';
+    result.textContent = '❌ Error: '+error.message;
+  }
+}
+
+// USERS
+let usersCache = [];
+
+async function renderUsers(content){
+  try{
+    const data = await apiCall('/api/admin/users');
+    usersCache = data.data || [];
+
+    content.innerHTML = `
+      <div class="panel">
+        <div class="panel-head">
+          <h3><i class="fa-solid fa-users"></i> All Users</h3>
+          <span class="count-badge" id="usersCount">${usersCache.length} total</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>User Email</th><th>Country</th><th>Status</th><th>Date</th></tr></thead>
+            <tbody id="usersTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    `;
+    paintUsers(usersCache);
+  }catch(error){
+    content.innerHTML = '<div class="panel"><div class="error-state"><i class="fa-solid fa-circle-exclamation"></i><br>Failed to load users: '+escapeHtml(error.message)+'</div></div>';
+  }
+}
+
+function paintUsers(list){
+  const tbody = document.getElementById('usersTbody');
+  if(!tbody) return;
+  tbody.innerHTML = list.length > 0 ? list.map(u => `
+    <tr>
+      <td class="cell-primary">${escapeHtml(u.user_email || 'N/A')}</td>
+      <td>${escapeHtml(u.country || 'N/A')}</td>
+      <td><span class="badge ${badgeClass(u.status)}">${escapeHtml(u.status || 'pending')}</span></td>
+      <td>${fmtDate(u.created_at)}</td>
+    </tr>
+  `).join('') : '<tr><td colspan="4"><div class="empty-state"><i class="fa-regular fa-user"></i>No users found</div></td></tr>';
+}
+
+// PAYMENTS
+async function renderPayments(content){
+  try{
+    const data = await apiCall('/api/admin/payments');
+    const payments = data.data?.payments || [];
+    const stats = data.data?.stats || {};
+
+    content.innerHTML = `
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-sack-dollar"></i></div>
+          <div class="stat-number" id="pay-revenue">$0</div>
+          <div class="stat-label">Total Revenue</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+          <div class="stat-number" id="pay-paid">0</div>
+          <div class="stat-label">Paid Payments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+          <div class="stat-number" id="pay-pending">0</div>
+          <div class="stat-label">Pending Payments</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3><i class="fa-solid fa-wallet"></i> All Payments</h3>
+          <span class="count-badge">${payments.length} total</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>User</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+            <tbody>
+              ${payments.length > 0 ? payments.map(p => `
+                <tr>
+                  <td class="cell-primary">${escapeHtml(p.user_name || 'N/A')}</td>
+                  <td>$${fmtMoney(p.amount || 0)}</td>
+                  <td><span class="badge ${badgeClass(p.status)}">${escapeHtml(p.status || 'pending')}</span></td>
+                  <td>${fmtDate(p.created_at)}</td>
+                </tr>
+              `).join('') : '<tr><td colspan="4"><div class="empty-state"><i class="fa-regular fa-credit-card"></i>No payments yet</div></td></tr>'}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    animateNumber(document.getElementById('pay-revenue'), stats.totalRevenue || 0, {prefix:'$'});
+    animateNumber(document.getElementById('pay-paid'), stats.paid || 0);
+    animateNumber(document.getElementById('pay-pending'), stats.pending || 0);
+
+  }catch(error){
+    content.innerHTML = '<div class="panel"><div class="error-state"><i class="fa-solid fa-circle-exclamation"></i><br>Failed to load payments: '+escapeHtml(error.message)+'</div></div>';
+  }
+}
+
+// DOCUMENT CHECKS
+async function renderDocumentChecks(content){
+  try{
+    const data = await apiCall('/api/admin/document-checks');
+    const checks = data.data?.checks || [];
+    const stats = data.data?.stats || {};
+
+    content.innerHTML = `
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-file-shield"></i></div>
+          <div class="stat-number" id="doc-total">0</div>
+          <div class="stat-label">Total Checks</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <div class="stat-number" id="doc-high">0</div>
+          <div class="stat-label">High Risk</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-shield-check"></i></div>
+          <div class="stat-number" id="doc-low">0</div>
+          <div class="stat-label">Low Risk</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3><i class="fa-solid fa-magnifying-glass-chart"></i> Document Checks</h3>
+          <span class="count-badge">${checks.length} total</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>User</th><th>Country</th><th>Risk Level</th><th>Date</th></tr></thead>
+            <tbody>
+              ${checks.length > 0 ? checks.map(c => {
+                const risk = c.results?.fakeCheck?.overallRisk || 'Unknown';
+                return `
+                <tr>
+                  <td class="cell-primary">${escapeHtml(c.user_name || 'N/A')}</td>
+                  <td>${escapeHtml(c.country || 'N/A')}</td>
+                  <td><span class="badge ${badgeClass(risk)}">${escapeHtml(risk)}</span></td>
+                  <td>${fmtDate(c.created_at)}</td>
+                </tr>
+              `; }).join('') : '<tr><td colspan="4"><div class="empty-state"><i class="fa-regular fa-file"></i>No document checks yet</div></td></tr>'}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    animateNumber(document.getElementById('doc-total'), stats.total || 0);
+    animateNumber(document.getElementById('doc-high'), stats.highRisk || 0);
+    animateNumber(document.getElementById('doc-low'), stats.lowRisk || 0);
+
+  }catch(error){
+    content.innerHTML = '<div class="panel"><div class="error-state"><i class="fa-solid fa-circle-exclamation"></i><br>Failed to load document checks: '+escapeHtml(error.message)+'</div></div>';
+  }
+}
+
+loadTab('dashboard', document.querySelector('.nav-item.active'));
+</script>
+
+</body>
+</html>
