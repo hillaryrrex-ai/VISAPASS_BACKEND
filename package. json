@@ -1,0 +1,18 @@
+{
+  "name": "visapass-backend",
+  "version": "1.0.0",
+  "description": "VisaPass Backend API with multi-API caching",
+  "main": "server.js",
+  "scripts": {
+    "start": "ls -la && node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "@supabase/supabase-js": "^2.39.0",
+    "@google/generative-ai": "^0.1.0",
+    "sharp": "^0.33.0",
+    "paystack": "^1.0.0"
+  }
+}
