@@ -1,0 +1,38 @@
+# =============================================
+# SUPABASE
+# =============================================
+SUPABASE_URL=https://oenrqykgnlyznarwzfyd.supabase.co
+SUPABASE_SERVICE_KEY=sb_secret_uwd-dtinxAWQxMrxuXdmnQ_RdcvWmaj
+
+# =============================================
+# GEMINI AI
+# =============================================
+GEMINI_API_KEY=AIzaSyARcf7WaCKeKGww_Q8ppWqWXQdZx6Q9U0Y
+
+# =============================================
+# ORIZN API (Visa Requirements)
+# =============================================
+ORIZN_API_KEY=orizn_visa_586c65d030f19deb1f7a2bac02e157a7a720ce9110086049
+
+# =============================================
+# TRAVEL BUDDY API (RapidAPI)
+# =============================================
+TRAVELBUDDY_API_KEY=023a945319mshaff54bfb78a431ep1c989ejsn2ff8f0d8dfa4
+
+# =============================================
+# FIREBASE (Your Firebase Project: ltc-app-c91cc)
+# =============================================
+FIREBASE_API_KEY=AIzaSyB3yFa4TSaxJzuBsznTiRXqBy7BDAa1IAY
+FIREBASE_AUTH_DOMAIN=ltc-app-c91cc.firebaseapp.com
+FIREBASE_PROJECT_ID=ltc-app-c91cc
+FIREBASE_STORAGE_BUCKET=ltc-app-c91cc.firebasestorage.app
+FIREBASE_MESSAGING_SENDER_ID=421837993503
+FIREBASE_APP_ID=1:421837993503:web:24225fb9ca0479e76f872a
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@ltc-app-c91cc.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCuy1cFi1kBmztI\n6P4RcSG9MTRHLy7KtfpSxrLX/tSNV+YmHqR1Ud9RxrJW+VnPDwLqN1omXSGDhwAe\ntgIfhi6H9tRGOXooymuWNxz+il/m2Z16nwYTcadOu90hFyo8sYHIBMZ3cI5NiVgg\nZWVM8xLfiRYSlB22vKMkAr9SVlWW7sWupBSxDB5qUrLR5moYD9X2L9rBkQqtOxEf\npaXZLhcbeB8sjQpmlv1e6uDKWC7ZUM+Qd3vU9NUpycFyj3bUrqcc+0IvlcB9SUr6\nPOjMgHyYRQL8HhLhBLe3pULj/PSwW8zxRGHQXkZWKYcui4NHvOPdjPsZ4XO1SlIC\nDHJy9PlxAgMBAAECggEACeEEMhQGG8kiOKSyd1nlhkPZqIxKILrYQwVn5j1I1hQ5\ntb3Vnava60xHmBLPuJwolgQ63CA3XK+smg+/Xvi+eIDCzpVBCj0mh37l7Jz1fp6d\n/+gs97xcsF59yPj+Mh/2Lc/XR7jc0hUJHgudBhRW5Ltiu/oTE9jlf4uINKccf0M3\njxfAnBlkDqyfC3CL5+A4+AuUKD5xZsXQugv2Q2F3vxb0vMhxUyMHPLt2dp85fwOT\nMZLL/g15MaTNiMBvyl00oLgL8HmzYZoY7VoFEUpCfHY1tztcuwsjAKiQF3qgU1BM\nowVVfsJqI52OQEkpRjIwpiLpztnt7DPP4x0ycyPk4QKBgQDWftYs+bvWZry4XJK+\nwz9yl/CIoybgZSmaBpqKpc/n8DrDx9cvk1qjseGY/RaVFPLS7jmhAPwOzfGcbQBP\nzKYpQwQsBpOzlNC42INpviHH/2oTxCiyUg7JHzL1OgC9tObND60WzCmIL4BeEtzn\n529i0Z+VPLWnaIb+GZS8rBEfBwKBgQDQneHUppZ9pG/8HON4/J12Jhaq38FpgaAm\n70AqLMBjGr3r/7jACaxtmPHWT1nruGfJaOCUjItZftEDdn6HC47reOHA+Z7P2+2d\nOmbx1XdTX03KWZyjBL2rbi2wog55eXqIONDCt1tigM6hPXNWTl65a+NzAxBgDrdv\nEz5gDTmNxwKBgHMeDYqD2Yj/CIgVvvg8x7+Txhc/IO1LveEZbDW/Oe7sIk3S4i15\ncyrpm/9EzarjXFNSYYGEisLTSrm+Um2BkygP/Jw4R2sZElAye4zz6yNwdBj5rTHP\nEnpkkS/FmoI2JaymninfFuctP0K98utPbZtmj7RDqeaYFeMoDYiY/HNfAoGBAK67\nTqe6UFo0HMfhunVfwNNw25OLjog8VlPGGMw6Z3masHC245uVfqLdc9G47OwOrH96\nJIDHpv/yxEZOPXQHLlH0EcJ8UZRv9Pm4LPlpfmSKcrGFlTjFg8fOpN5JHi6InSTz\n0YcF5LkAghFzUuN7CMPtpbhzXIfYS7PxPlFdQlOJAoGBANHn2xwHIYvxffwqurdv\nAv++qzWIs5rUQp8P9S+8kLmoxnyjvklzbgwYh5kzWAFvZ9dui9VvgKOq9ZE+c/A4\nDcA2vGwUK95xwI8FaXhOpLp7DoTL/oquyxe17y7spa4UyFXEqWyi1Tp7wqDAe+be\naCrDOdK1P9W/nZEMCZ3NLire\n-----END PRIVATE KEY-----\n"
+
+# =============================================
+# SERVER
+# =============================================
+PORT=5000
+FRONTEND_URL=http://localhost:3000
